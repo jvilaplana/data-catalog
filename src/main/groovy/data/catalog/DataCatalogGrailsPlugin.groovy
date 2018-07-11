@@ -1,6 +1,11 @@
 package data.catalog
 
+import grails.core.GrailsApplication
 import grails.plugins.*
+import org.irblleida.dc.DocClass
+import org.irblleida.dc.DocEnum
+import org.irblleida.dc.DocEnumValue
+import org.irblleida.dc.DocVariable
 
 class DataCatalogGrailsPlugin extends Plugin {
 
@@ -66,5 +71,83 @@ Brief summary/description of the plugin.
 
     void onShutdown(Map<String, Object> event) {
         // TODO Implement code that is executed when the application shuts down (optional)
+    }
+
+    private static def DEFAULT_FIELDS = ['$staticClassInfo', '__$stMC', 'metaClass', '$defaultDatabindingWhiteList',
+                                         'version', 'log', 'instanceControllersDomainBindingApi', 'instanceConvertersApi',
+                                         'org_grails_datastore_mapping_dirty_checking_DirtyCheckable__$changedProperties',
+                                         'org_grails_datastore_gorm_GormValidateable__errors', 'auditable',
+                                         'org_grails_datastore_gorm_GormValidateable__skipValidate', '$staticClassInfo$',
+                                         '$callSiteArray']
+
+    private static def DATA_CATALOG_DOMAIN_CLASSES = ['DocClass', 'DocVariable', 'DocEnum', 'DocEnumValue']
+
+    @Override
+    void onStartup(Map<String, Object> event) {
+        println("Configuring Data Catalog ...")
+        for (domainClass in grailsApplication.domainClasses) {
+            def domainClassName = domainClass.name
+
+            // Don't save the domain classes that belongs to DataCatalog plugin
+            if(domainClassName in DATA_CATALOG_DOMAIN_CLASSES)
+                continue
+
+            // Save DocClass info and get object
+            def docClass = saveDocClass(domainClassName)
+
+            // Save DocVariable (fields) for the particular Domain Class
+            saveDomainClassFields(domainClass, docClass)
+        }
+        println("... finished configuring Data Catalog")
+    }
+
+    private static DocClass saveDocClass(domainClassName){
+        DocClass docClass = DocClass.findByName(domainClassName)
+        if(!docClass)
+            docClass = new DocClass(name: domainClassName).save(flush: true)
+
+        return docClass
+    }
+
+    private static void saveDomainClassFields(domainClass, docClass){
+        for(def field in domainClass.clazz.declaredFields){
+            def fieldName = field.toString().split('\\.')[-1]
+
+            // Default Grails domain fields are not saved
+            if(fieldName in DEFAULT_FIELDS)
+                continue
+
+            def docVariable = DocVariable.findByNameAndDomain(fieldName, docClass)
+            if(!docVariable){
+                def fieldType = field.type.toString().split(' |\\.')[-1]
+                docVariable = new DocVariable(name: fieldName, type: fieldType, domain: docClass).save(flush: true)
+                docClass.addToVariables(docVariable)
+                docClass.save(flush: true)
+                checkFieldTypeIsEnum(field.type, docClass)
+            }
+        }
+    }
+
+    private static void checkFieldTypeIsEnum(fieldType, docClass){
+        if(fieldType.isEnum()){
+            def enumClass = fieldType.toString().split('\\.')[-1]
+
+            def docEnum = DocEnum.findByName(enumClass)
+
+            if(!docEnum){
+                docEnum = new DocEnum(name: enumClass).save(flush: true)
+
+                for(def enumValue in fieldType.values()){
+                    def docEnumValue = DocEnumValue.findByNameAndDocEnum(enumValue, docEnum)
+
+                    if(!docEnumValue){
+                        docEnumValue = new DocEnumValue(name: enumValue, docEnum: docEnum).save(flush: true)
+                        docEnum.addToValues(docEnumValue)
+                    }
+                }
+            }
+            docEnum.addToContexts(docClass)
+            docEnum.save(flush: true)
+        }
     }
 }

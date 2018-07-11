@@ -1,16 +1,17 @@
 package org.irblleida.dc
 
-class DocClass {
+class DocEnum {
 
     String name
     String description
 
     static hasMany = [
-            variables: DocVariable
+            values: DocEnumValue,
+            contexts: DocClass
     ]
 
     static constraints = {
-        name nullable: false, blank: false, unique: true
+        name nullable: false, blank: false
         description nullable: true
     }
 }
