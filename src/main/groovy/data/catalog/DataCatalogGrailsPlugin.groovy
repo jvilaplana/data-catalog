@@ -7,6 +7,8 @@ import org.irblleida.dc.DocEnum
 import org.irblleida.dc.DocEnumValue
 import org.irblleida.dc.DocVariable
 
+import java.lang.reflect.Type
+
 class DataCatalogGrailsPlugin extends Plugin {
 
     // the version or versions of Grails the plugin is designed for
@@ -45,6 +47,9 @@ Brief summary/description of the plugin.
     // Online location of the plugin's browseable source code.
 //    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
 
+
+    def watchedResources = "file:./grails-app/domain/**/*.groovy"
+
     Closure doWithSpring() { {->
             // TODO Implement runtime spring config (optional)
         }
@@ -59,9 +64,7 @@ Brief summary/description of the plugin.
     }
 
     void onChange(Map<String, Object> event) {
-        // TODO Implement code that is executed when any artefact that this plugin is
-        // watching is modified and reloaded. The event contains: event.source,
-        // event.application, event.manager, event.ctx, and event.plugin.
+
     }
 
     void onConfigChange(Map<String, Object> event) {
@@ -85,31 +88,43 @@ Brief summary/description of the plugin.
     @Override
     void onStartup(Map<String, Object> event) {
         println("Configuring Data Catalog ...")
-        for (domainClass in grailsApplication.domainClasses) {
-            def domainClassName = domainClass.name
+        def autoUpdate = getAutoUpdate()
 
-            // Don't save the domain classes that belongs to DataCatalog plugin
-            if(domainClassName in DATA_CATALOG_DOMAIN_CLASSES)
-                continue
+        if(autoUpdate){
+            for (domainClass in grailsApplication.domainClasses) {
+                def domainClassName = domainClass.name
+                // Don't save the domain classes that belongs to DataCatalog plugin
+                if(domainClassName in DATA_CATALOG_DOMAIN_CLASSES)
+                    continue
 
-            // Save DocClass info and get object
-            def docClass = saveDocClass(domainClassName)
-
-            // Save DocVariable (fields) for the particular Domain Class
-            saveDomainClassFields(domainClass, docClass)
+                // Save DocClass info and get object
+                saveCatalog(domainClass)
+            }
         }
-        println("... finished configuring Data Catalog")
+        println("... finished configuring Data Catalog\n")
     }
 
-    private static DocClass saveDocClass(domainClassName){
+    private Boolean getAutoUpdate(){
+        def autoUpdate = grailsApplication.config.getProperty('dataCatalog.autoUpdate')
+        if (autoUpdate == 'false') return false
+        return true
+    }
+
+    private static void saveCatalog(domainClass){
+        def domainClassName = domainClass.name
         DocClass docClass = DocClass.findByName(domainClassName)
+
         if(!docClass)
             docClass = new DocClass(name: domainClassName).save(flush: true)
 
-        return docClass
+        // Udate/Save DocVariable (fields) for the particular Domain Class
+        updateDomainClassFields(domainClass, docClass)
+
     }
 
-    private static void saveDomainClassFields(domainClass, docClass){
+    private static void updateDomainClassFields(domainClass, DocClass docClass){
+        // Check new variables
+        def declaredVariables = []
         for(def field in domainClass.clazz.declaredFields){
             def fieldName = field.toString().split('\\.')[-1]
 
@@ -117,13 +132,39 @@ Brief summary/description of the plugin.
             if(fieldName in DEFAULT_FIELDS)
                 continue
 
-            def docVariable = DocVariable.findByNameAndDomain(fieldName, docClass)
-            if(!docVariable){
-                def fieldType = field.type.toString().split(' |\\.')[-1]
-                docVariable = new DocVariable(name: fieldName, type: fieldType, domain: docClass).save(flush: true)
-                docClass.addToVariables(docVariable)
+            declaredVariables.add(fieldName)
+
+            // Field already saved
+            if(DocVariable.findByDomainAndName(docClass, fieldName) != null){
+                //TODO: Check if enum has changed
+                continue
+            }
+
+            def fieldType = field.type.toString().split('\\.')[-1]
+            def docVariable = new DocVariable(name: fieldName, type: fieldType, classType: field.type.toString(), domain: docClass).save(flush: true)
+            docClass.addToVariables(docVariable)
+            docClass.save(flush: true)
+            checkFieldTypeIsEnum(field.type, docClass)
+
+        }
+        // Check removed variables
+        def removedVariables = DocVariable.findAllByDomainAndNameNotInList(docClass, declaredVariables)
+
+        for(variable in removedVariables){
+            def variableType = variable.classType
+
+            if(docClass.variables.contains(variable)){
+                docClass.removeFromVariables(variable)
                 docClass.save(flush: true)
-                checkFieldTypeIsEnum(field.type, docClass)
+            }
+            variable.delete(flush: true)
+
+            try{
+                Class c = Class.forName(variableType)
+                if(c.isEnum())
+                    reviewEnum(variable.type)
+            }catch (ClassNotFoundException e){
+                DocEnum.findByName(variable.type).delete(flush: true)
             }
         }
     }
@@ -146,8 +187,27 @@ Brief summary/description of the plugin.
                     }
                 }
             }
-            docEnum.addToContexts(docClass)
-            docEnum.save(flush: true)
+            if(!docEnum.contexts || !docEnum.contexts.contains(docClass)){
+                docEnum.addToContexts(docClass)
+                docEnum.save(flush: true)
+            }
         }
     }
+
+    private static void reviewEnum(enumClass){
+        def enumName = enumClass.toString().split('\\.')[-1]
+        def docEnum = DocEnum.findByName(enumName)
+
+        // Review contexts
+        for(DocClass context in docEnum.contexts){
+            def variablesList = DocVariable.findAllByDomainAndType(context, enumClass)
+            if(!variablesList) docEnum.removeFromContexts(context)
+        }
+        docEnum.save(flush: true)
+
+        if(!docEnum.contexts)
+            docEnum.delete(flush: true)
+
+    }
+
 }
