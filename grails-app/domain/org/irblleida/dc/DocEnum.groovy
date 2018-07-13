@@ -6,6 +6,7 @@ class DocEnum {
     String description
 
     static hasMany = [
+            values: DocEnumValue,
             contexts: DocClass
     ]
 

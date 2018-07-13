@@ -140,7 +140,9 @@ Brief summary/description of the plugin.
             }
 
             def fieldType = field.type.toString().split('\\.')[-1]
-            new DocVariable(name: fieldName, type: fieldType, classType: field.type.toString(), domain: docClass).save(flush: true)
+            def variable = new DocVariable(name: fieldName, type: fieldType, classType: field.type.toString(), domain: docClass).save(flush: true)
+            docClass.addToVariables(variable)
+            docClass.save(flush: true)
             checkFieldTypeIsEnum(field.type, docClass)
 
         }
@@ -151,6 +153,8 @@ Brief summary/description of the plugin.
             def variableClassType = variable.classType
             def variableType = variable.type
 
+            docClass.removeFromVariables(variable)
+            docClass.save(flush: true)
             variable.delete(flush: true)
 
             try{
@@ -177,7 +181,9 @@ Brief summary/description of the plugin.
                     def docEnumValue = DocEnumValue.findByNameAndDocEnum(enumValue, docEnum)
 
                     if(!docEnumValue){
-                        new DocEnumValue(name: enumValue, docEnum: docEnum).save(flush: true)
+                        def value = new DocEnumValue(name: enumValue, docEnum: docEnum).save(flush: true)
+                        docEnum.addToValues(value)
+                        docEnum.save(flush: true)
                     }
                 }
             }

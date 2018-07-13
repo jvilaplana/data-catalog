@@ -10,7 +10,7 @@ class DocVariable {
     Boolean required
     String defaultUnits
 
-    static belongsTo = [domain: DocClass]
+    DocClass domain
 
     static constraints = {
         name nullable: false, blank: false
