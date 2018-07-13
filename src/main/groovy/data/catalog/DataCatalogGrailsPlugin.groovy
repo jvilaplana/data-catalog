@@ -80,7 +80,7 @@ Brief summary/description of the plugin.
                                          'org_grails_datastore_mapping_dirty_checking_DirtyCheckable__$changedProperties',
                                          'org_grails_datastore_gorm_GormValidateable__errors', 'auditable',
                                          'org_grails_datastore_gorm_GormValidateable__skipValidate', '$staticClassInfo$',
-                                         '$callSiteArray']
+                                         '$callSiteArray', 'belongsTo', 'transients', 'constraints', 'hasMany', 'mapping']
 
     private static def DATA_CATALOG_DOMAIN_CLASSES = ['DocClass', 'DocVariable', 'DocEnum', 'DocEnumValue']
 

@@ -42,7 +42,17 @@ def dataCatalogService
 dataCatalogService.udate()
 ```
 
-Or navigating to `URL/dataCatalog` path.
+### Default views
+
+This pluggin offers you some default views for the Data Catalog visualization. You will find it on `URL/dataCatalog/index`.
+All the views use `Bootstrap v4.1.1`, `Font Awesome Free 5.1.0 ` and `jQuery v1.9.0` Plugins
+
+By the moment **it does not offers any security mechanism**.
+
+You can override any view if you want to customize the security or the style by creating the `DataCatalog` controller and views.
+The default views are:
+
+ - `dataCatalog/index`: index with all the information
 
 
 ### Documentation
@@ -83,3 +93,9 @@ This plugin defines four different domain classes:
 | --------- | ----------- | ----------- |
 | `name` | `String` | Name of the Enum value |
 | `description` | `String` | Description of the Enum value | 
+
+
+## Authors
+
+ - [Pau Balaguer](https://github.com/pbalaguer19)
+ - [Jordi Vilaplana](https://github.com/jvilaplana)
