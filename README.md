@@ -33,13 +33,13 @@ It automatically handles the application start. If you want to disable it, just 
 dataCatalog.autoUpdate = false
 ```
 
-By doing this, you will be able to update your data catalog using the method `udate()` from service `dataCatalogService`:
+By doing this, you will be able to update your data catalog using the method `update()` from service `dataCatalogService`:
 
 ```
 ...
 def dataCatalogService
 ...
-dataCatalogService.udate()
+dataCatalogService.update()
 ```
 
 ### Default views
