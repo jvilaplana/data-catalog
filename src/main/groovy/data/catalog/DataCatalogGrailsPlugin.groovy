@@ -64,7 +64,6 @@ Brief summary/description of the plugin.
     }
 
     void onChange(Map<String, Object> event) {
-
     }
 
     void onConfigChange(Map<String, Object> event) {
@@ -141,30 +140,26 @@ Brief summary/description of the plugin.
             }
 
             def fieldType = field.type.toString().split('\\.')[-1]
-            def docVariable = new DocVariable(name: fieldName, type: fieldType, classType: field.type.toString(), domain: docClass).save(flush: true)
-            docClass.addToVariables(docVariable)
-            docClass.save(flush: true)
+            new DocVariable(name: fieldName, type: fieldType, classType: field.type.toString(), domain: docClass).save(flush: true)
             checkFieldTypeIsEnum(field.type, docClass)
 
         }
         // Check removed variables
         def removedVariables = DocVariable.findAllByDomainAndNameNotInList(docClass, declaredVariables)
 
-        for(variable in removedVariables){
-            def variableType = variable.classType
+        for(def variable in removedVariables){
+            def variableClassType = variable.classType
+            def variableType = variable.type
 
-            if(docClass.variables.contains(variable)){
-                docClass.removeFromVariables(variable)
-                docClass.save(flush: true)
-            }
             variable.delete(flush: true)
 
             try{
-                Class c = Class.forName(variableType)
+                Class c = Class.forName(variableClassType)
                 if(c.isEnum())
-                    reviewEnum(variable.type)
+                    reviewEnum(variableType)
             }catch (ClassNotFoundException e){
-                DocEnum.findByName(variable.type).delete(flush: true)
+                def docEnum = DocEnum.findByName(variableType)
+                if(docEnum) docEnum.delete(flush: true)
             }
         }
     }
@@ -182,8 +177,7 @@ Brief summary/description of the plugin.
                     def docEnumValue = DocEnumValue.findByNameAndDocEnum(enumValue, docEnum)
 
                     if(!docEnumValue){
-                        docEnumValue = new DocEnumValue(name: enumValue, docEnum: docEnum).save(flush: true)
-                        docEnum.addToValues(docEnumValue)
+                        new DocEnumValue(name: enumValue, docEnum: docEnum).save(flush: true)
                     }
                 }
             }
