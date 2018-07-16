@@ -44,15 +44,33 @@ dataCatalogService.update()
 
 ### Default views
 
-This pluggin offers you some default views for the Data Catalog visualization. You will find it on `URL/dataCatalog/index`.
+This plugin offers you some default views for the Data Catalog visualization. You will find it on `URL/dataCatalog/index`.
 All the views use `Bootstrap v4.1.1`, `Font Awesome Free 5.1.0 ` and `jQuery v1.9.0` Plugins
 
-By the moment **it does not offers any security mechanism**.
+It **does not offers any security mechanism**.
 
 You can override any view if you want to customize the security or the style by creating the `DataCatalog` controller and views.
-The default views are:
+
+If you are using `SpringSecurity` Plugin and you want to customize the security, then you can extend the `DataCatalog` class.
+Example:
+```
+@Secured(['ROLE_ADMIN'])
+class DataCatalogController extends org.irblleida.dc.DataCatalogController{
+
+    def index() {
+        super.index()
+    }
+
+}
+```
+
+If you want to customize the views, the default paths are:
 
  - `dataCatalog/index`: index with all the information
+ - `docClass/[show|edit|index|create]`: DocClass domain default views.
+ - `docVariable/[show|edit|index|create]`: DocVariable domain default views.
+ - `docEnum/[show|edit|index|create]`: DocEnum domain default views.
+ - `docEnumValue/[show|edit|index|create]`: DocEnumValue domain default views.
 
 
 ### Documentation
