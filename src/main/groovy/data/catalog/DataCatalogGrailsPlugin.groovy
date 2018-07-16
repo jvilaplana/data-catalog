@@ -76,8 +76,14 @@ Brief summary/description of the plugin.
 
     @Override
     void onStartup(Map<String, Object> event) {
-        grailsApplication.mainContext.getBean('dataCatalogService').update()
+        def autoUpdate = getAutoUpdate()
+        if(autoUpdate) grailsApplication.mainContext.getBean('dataCatalogService').update()
     }
 
+    private Boolean getAutoUpdate(){
+        def autoUpdate = grailsApplication.config.getProperty('dataCatalog.autoUpdate')
+        if (autoUpdate == 'false') return false
+        return true
+    }
 
 }

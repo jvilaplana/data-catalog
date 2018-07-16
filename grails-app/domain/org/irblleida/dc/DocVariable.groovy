@@ -12,6 +12,10 @@ class DocVariable {
 
     DocClass domain
 
+    static belongsTo = [
+            domain: DocClass
+    ]
+
     static constraints = {
         name nullable: false, blank: false
         description nullable: true

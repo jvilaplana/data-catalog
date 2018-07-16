@@ -7,6 +7,10 @@ class DocEnumValue {
 
     DocEnum docEnum
 
+    static belongsTo = [
+            docEnum: DocEnum
+    ]
+
     static constraints = {
         name nullable: false, blank: false
         description nullable: true

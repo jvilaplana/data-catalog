@@ -9,6 +9,8 @@ class DocClass {
             variables: DocVariable
     ]
 
+    static embedded = ['variables']
+
     static constraints = {
         name nullable: false, blank: false, unique: true
         description nullable: true

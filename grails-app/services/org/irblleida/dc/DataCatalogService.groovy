@@ -11,32 +11,23 @@ class DataCatalogService {
                                          'org_grails_datastore_mapping_dirty_checking_DirtyCheckable__$changedProperties',
                                          'org_grails_datastore_gorm_GormValidateable__errors', 'auditable',
                                          'org_grails_datastore_gorm_GormValidateable__skipValidate', '$staticClassInfo$',
-                                         '$callSiteArray', 'belongsTo', 'transients', 'constraints', 'hasMany', 'mapping']
+                                         '$callSiteArray', 'belongsTo', 'transients', 'constraints', 'hasMany', 'mapping',
+                                         'embedded']
 
     private static def DATA_CATALOG_DOMAIN_CLASSES = ['DocClass', 'DocVariable', 'DocEnum', 'DocEnumValue']
 
     def update() {
         println("Configuring Data Catalog ...")
-        def autoUpdate = getAutoUpdate()
+        for (domainClass in grailsApplication.domainClasses) {
+            def domainClassName = domainClass.name
+            // Don't save the domain classes that belongs to DataCatalog plugin
+            if(domainClassName in DATA_CATALOG_DOMAIN_CLASSES)
+                continue
 
-        if(autoUpdate){
-            for (domainClass in grailsApplication.domainClasses) {
-                def domainClassName = domainClass.name
-                // Don't save the domain classes that belongs to DataCatalog plugin
-                if(domainClassName in DATA_CATALOG_DOMAIN_CLASSES)
-                    continue
-
-                // Save DocClass info and get object
-                saveCatalog(domainClass)
-            }
+            // Save DocClass info and get object
+            saveCatalog(domainClass)
         }
         println("... finished configuring Data Catalog\n")
-    }
-
-    private Boolean getAutoUpdate(){
-        def autoUpdate = grailsApplication.config.getProperty('dataCatalog.autoUpdate')
-        if (autoUpdate == 'false') return false
-        return true
     }
 
     private static void saveCatalog(domainClass){

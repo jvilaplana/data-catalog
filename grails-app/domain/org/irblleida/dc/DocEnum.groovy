@@ -10,6 +10,8 @@ class DocEnum {
             contexts: DocClass
     ]
 
+    static embedded = ['values']
+
     static constraints = {
         name nullable: false, blank: false
         description nullable: true
