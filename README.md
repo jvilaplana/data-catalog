@@ -91,10 +91,22 @@ This plugin defines four different domain classes:
 | --------- | ----------- | ----------- |
 | `name` | `String` | Name of the variable |
 | `description` | `String` | Description of the variable |
-| `type` | `Class` | Object type of the variable |
+| `type` | `String` | Type of the variable |
+| `classType` | `String` | Full class type of the variable |
 | `code` | `String` | Code that defines the variable |
 | `required` | `Boolean` | Set to `true` if it is not `nullable` |
 | `defaultUnits` | `String` | Default measure units, if any |
+
+* Note that the `dataCatalog/index` default view does not show the `classType` column.
+* Note that in `dataCatalog/index` default view there is an extra column called "Detailed name". It shows the full name from `messages.properties` file (if exists).
+It search for the following format for each variable:
+```
+domainName.variableName.label
+```
+Example:
+```
+user.username.label
+```
 
 #### DocEnum
 
