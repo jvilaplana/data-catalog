@@ -50,6 +50,8 @@ dependencies {
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-plugin-testing"
     testCompile "org.grails:grails-web-testing-support"
+
+    compile 'grails.bootstrap.forms:grails-bootstrap-forms:0.3.1'
 }
 
 bootRun {

@@ -36,6 +36,20 @@
         <div class="col-sm-12 main mt-4">
             <h2 class="text-center"><g:message code="plugin.title"/></h2>
             <div class="container">
+
+                <g:if test="${flash.message}">
+                    <div class="alert alert-success" role="alert">
+                        <div class="message" role="status">${flash.message}</div>
+                    </div>
+                </g:if>
+                <g:hasErrors bean="${this.docClass}">
+                    <div class="alert alert-warning" role="alert">
+                        <g:eachError bean="${this.docClass}" var="error">
+                            <p <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></p>
+                        </g:eachError>
+                    </div>
+                </g:hasErrors>
+
                 <div class="card mt-5">
                     <div class="card-header">
                         <span><g:message code="plugin.title"/> (<g:message code="domain.label"/>)</span>
@@ -43,10 +57,14 @@
                     <div class="card-body">
                         <div class="row justify-content-md-center">
                             <g:each var="docClass" in="${docClassList}">
-                                <div class="col-md-11">
+                                <div class="col-md-12">
                                     <div id="${docClass.name.uncapitalize()}" class="card mt-4">
                                         <div class="card-header">
                                             <span>${docClass.name}</span>
+                                            <g:link controller="docClass" action="edit" id="${docClass?.id}" class="btn btn-warning float-right">
+                                                <i class="far fa-edit"></i>
+                                                <g:message code="default.button.edit.label" />
+                                            </g:link>
                                         </div>
                                         <div class="card-body">
                                             ${docClass.description}
@@ -85,7 +103,7 @@
                                                         </g:else>
                                                         </td>
                                                         <td>${docVariable.code}</td>
-                                                        <td><g:message code="boolean.${docVariable.required}.label"/></td>
+                                                        <td><g:message code="default.boolean.${docVariable.required}"/></td>
                                                         <td>${docVariable.defaultUnits}</td>
                                                     </tr>
                                                 </g:each>
@@ -110,6 +128,10 @@
                                     <div id="${docEnum.name.uncapitalize()}" class="card mt-4">
                                         <div class="card-header">
                                             <span>${docEnum.name}</span>
+                                            <g:link controller="docEnum" action="edit" id="${docEnum?.id}" class="btn btn-warning float-right">
+                                                <i class="far fa-edit"></i>
+                                                <g:message code="default.button.edit.label" />
+                                            </g:link>
                                         </div>
                                         <div class="card-body">
                                             ${docEnum.description}

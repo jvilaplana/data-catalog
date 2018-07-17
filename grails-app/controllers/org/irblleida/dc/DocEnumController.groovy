@@ -7,17 +7,6 @@ class DocEnumController {
 
     DocEnumService docEnumService
 
-    static allowedMethods = [save: "POST", update: "PUT", delete: "DELETE"]
-
-    def index(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        respond docEnumService.list(params), model:[docEnumCount: docEnumService.count()]
-    }
-
-    def show(Long id) {
-        respond docEnumService.get(id)
-    }
-
     def create() {
         respond new DocEnum(params)
     }
@@ -34,14 +23,6 @@ class DocEnumController {
             respond docEnum.errors, view:'create'
             return
         }
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.created.message', args: [message(code: 'docEnum.label', default: 'DocEnum'), docEnum.id])
-                redirect docEnum
-            }
-            '*' { respond docEnum, [status: CREATED] }
-        }
     }
 
     def edit(Long id) {
@@ -54,20 +35,19 @@ class DocEnumController {
             return
         }
 
+        for(DocEnumValue docEnumValue in docEnum.values){
+            if(params[docEnumValue.name + '-description']) docEnumValue.description = params[docEnumValue.name + '-description']
+        }
+
         try {
             docEnumService.save(docEnum)
         } catch (ValidationException e) {
-            respond docEnum.errors, view:'edit'
+            respond docEnum.errors, view:'edit', id: docEnum.id.toString()
             return
         }
 
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.updated.message', args: [message(code: 'docEnum.label', default: 'DocEnum'), docEnum.id])
-                redirect docEnum
-            }
-            '*'{ respond docEnum, [status: OK] }
-        }
+        flash.message = message(code: 'default.saved.success')
+        redirect controller: 'dataCatalog', action: 'index'
     }
 
     def delete(Long id) {
@@ -77,14 +57,6 @@ class DocEnumController {
         }
 
         docEnumService.delete(id)
-
-        request.withFormat {
-            form multipartForm {
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'docEnum.label', default: 'DocEnum'), id])
-                redirect action:"index", method:"GET"
-            }
-            '*'{ render status: NO_CONTENT }
-        }
     }
 
     protected void notFound() {
