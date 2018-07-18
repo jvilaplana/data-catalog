@@ -22,13 +22,13 @@
             <h5 class="mt-3"><g:message code="domain.label"/></h5>
             <ul id="classes-list" class="nav nav-sidebar">
                 <g:each var="docClass" in="${docClassList}">
-                    <li><a href="#" onclick="moveTo('${docClass.name.uncapitalize()}')" class="left-menu ${docClass.name.uncapitalize()}">${docClass.name}</a></li>
+                    <li><a href="#" onclick="moveTo('${docClass.name.uncapitalize()}')" class="left-menu ${docClass.name.uncapitalize()} ${docClass.isCompleted ? '' : 'incomplete'}">${docClass.name}</a></li>
                 </g:each>
             </ul>
             <h5 class="mt-3"><g:message code="enum.label"/></h5>
             <ul id="enums-list" class="nav nav-sidebar">
                 <g:each var="docEnum" in="${docEnumList}">
-                    <li><a href="#" onclick="moveTo('${docEnum.name.uncapitalize()}')" class="left-menu ${docEnum.name.uncapitalize()}">${docEnum.name}</a></li>
+                    <li><a href="#" onclick="moveTo('${docEnum.name.uncapitalize()}')" class="left-menu ${docEnum.name.uncapitalize()} ${docEnum.isCompleted ? '' : 'incomplete'}">${docEnum.name}</a></li>
                 </g:each>
             </ul>
         </div>
@@ -50,118 +50,128 @@
                     </div>
                 </g:hasErrors>
 
-                <div class="card mt-5">
-                    <div class="card-header">
-                        <span><g:message code="plugin.title"/> (<g:message code="domain.label"/>)</span>
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="#" onclick="onlyCompleted();" class="btn btn-primary float-right">
+                            <i class="far fa-eye"></i>
+                            <span id="completed-button-span"><g:message code="default.button.incomplete" /></span>
+                        </a>
                     </div>
-                    <div class="card-body">
-                        <div class="row justify-content-md-center">
-                            <g:each var="docClass" in="${docClassList}">
-                                <div class="col-md-12">
-                                    <div id="${docClass.name.uncapitalize()}" class="card mt-4">
-                                        <div class="card-header">
-                                            <span>${docClass.name}</span>
-                                            <g:link controller="docClass" action="edit" id="${docClass?.id}" class="btn btn-warning float-right">
-                                                <i class="far fa-edit"></i>
-                                                <g:message code="default.button.edit.label" />
-                                            </g:link>
+                    <div class="col-md-12">
+                        <div class="card mt-2">
+                            <div class="card-header">
+                                <span><g:message code="plugin.title"/> (<g:message code="domain.label"/>)</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row justify-content-md-center">
+                                    <g:each var="docClass" in="${docClassList}">
+                                        <div class="col-md-12">
+                                            <div id="${docClass.name.uncapitalize()}" class="card mt-4 ${docClass.isCompleted ? '' : 'border-danger'} class-card">
+                                                <div class="card-header">
+                                                    <span>${docClass.name}</span>
+                                                    <g:link controller="docClass" action="edit" id="${docClass?.id}" class="btn btn-warning float-right">
+                                                        <i class="far fa-edit"></i>
+                                                        <g:message code="default.button.edit.label" />
+                                                    </g:link>
+                                                </div>
+                                                <div class="card-body">
+                                                    ${docClass.description}
+                                                    <br/>
+                                                    <g:message code="variables.label"/>:
+                                                    <table class="table mt-2">
+                                                        <thead>
+                                                        <tr>
+                                                            <th><g:message code="variable.name.label"/></th>
+                                                            <th><g:message code="variable.detailedName.label"/></th>
+                                                            <th><g:message code="variable.description.label"/></th>
+                                                            <th><g:message code="variable.type.label"/></th>
+                                                            <th><g:message code="variable.code.label"/></th>
+                                                            <th><g:message code="variable.required.label"/></th>
+                                                            <th><g:message code="variable.defaultUnits.label"/></th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <g:each var="docVariable" in="${docClass.variables}">
+                                                            <tr class="${!docVariable.description ? 'table-warning' : ''}">
+                                                                <td>${docVariable.name}</td>
+                                                                <td><g:message code="${docClass.name.uncapitalize()}.${docVariable.name}.label" default=""/></td>
+                                                                <td>${docVariable.description}</td>
+                                                                <td>
+                                                                    <g:set var="type" value="${DocClass.findByName(docVariable.type)}"/>
+                                                                    <g:if test="${type}">
+                                                                        <a href="#" onclick="moveTo('${docVariable.type.uncapitalize()}')">${docVariable.type}</a>
+                                                                    </g:if><g:else>
+                                                                    <g:set var="type" value="${DocEnum.findByName(docVariable.type)}"/>
+                                                                    <g:if test="${type}">
+                                                                        <a href="#" onclick="moveTo('${docVariable.type.uncapitalize()}')">${docVariable.type}</a>
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        ${docVariable.type}
+                                                                    </g:else>
+                                                                </g:else>
+                                                                </td>
+                                                                <td>${docVariable.code}</td>
+                                                                <td><g:message code="default.boolean.${docVariable.required}"/></td>
+                                                                <td>${docVariable.defaultUnits}</td>
+                                                            </tr>
+                                                        </g:each>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="card-body">
-                                            ${docClass.description}
-                                            <br/>
-                                            <g:message code="variables.label"/>:
-                                            <table class="table mt-2">
-                                                <thead>
-                                                <tr>
-                                                    <th><g:message code="variable.name.label"/></th>
-                                                    <th><g:message code="variable.detailedName.label"/></th>
-                                                    <th><g:message code="variable.description.label"/></th>
-                                                    <th><g:message code="variable.type.label"/></th>
-                                                    <th><g:message code="variable.code.label"/></th>
-                                                    <th><g:message code="variable.required.label"/></th>
-                                                    <th><g:message code="variable.defaultUnits.label"/></th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <g:each var="docVariable" in="${docClass.variables}">
-                                                    <tr>
-                                                        <td>${docVariable.name}</td>
-                                                        <td><g:message code="${docClass.name.uncapitalize()}.${docVariable.name}.label" default=""/></td>
-                                                        <td>${docVariable.description}</td>
-                                                        <td>
-                                                            <g:set var="type" value="${DocClass.findByName(docVariable.type)}"/>
-                                                            <g:if test="${type}">
-                                                                <a href="#" onclick="moveTo('${docVariable.type.uncapitalize()}')">${docVariable.type}</a>
-                                                            </g:if><g:else>
-                                                            <g:set var="type" value="${DocEnum.findByName(docVariable.type)}"/>
-                                                            <g:if test="${type}">
-                                                                <a href="#" onclick="moveTo('${docVariable.type.uncapitalize()}')">${docVariable.type}</a>
-                                                            </g:if>
-                                                            <g:else>
-                                                                ${docVariable.type}
-                                                            </g:else>
-                                                        </g:else>
-                                                        </td>
-                                                        <td>${docVariable.code}</td>
-                                                        <td><g:message code="default.boolean.${docVariable.required}"/></td>
-                                                        <td>${docVariable.defaultUnits}</td>
-                                                    </tr>
-                                                </g:each>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    </g:each>
                                 </div>
-                            </g:each>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="card mt-5">
-                    <div class="card-header">
-                        <span><g:message code="plugin.title"/> (<g:message code="enum.label"/>)</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="row justify-content-md-center">
-                            <g:each var="docEnum" in="${docEnumList}">
-                                <div class="col-md-11">
-                                    <div id="${docEnum.name.uncapitalize()}" class="card mt-4">
-                                        <div class="card-header">
-                                            <span>${docEnum.name}</span>
-                                            <g:link controller="docEnum" action="edit" id="${docEnum?.id}" class="btn btn-warning float-right">
-                                                <i class="far fa-edit"></i>
-                                                <g:message code="default.button.edit.label" />
-                                            </g:link>
+                        <div class="card mt-5 mb-5">
+                            <div class="card-header">
+                                <span><g:message code="plugin.title"/> (<g:message code="enum.label"/>)</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row justify-content-md-center">
+                                    <g:each var="docEnum" in="${docEnumList}">
+                                        <div class="col-md-11">
+                                            <div id="${docEnum.name.uncapitalize()}" class="card mt-4 ${docEnum.isCompleted ? '' : 'border-danger'} class-card">
+                                                <div class="card-header">
+                                                    <span>${docEnum.name}</span>
+                                                    <g:link controller="docEnum" action="edit" id="${docEnum?.id}" class="btn btn-warning float-right">
+                                                        <i class="far fa-edit"></i>
+                                                        <g:message code="default.button.edit.label" />
+                                                    </g:link>
+                                                </div>
+                                                <div class="card-body">
+                                                    ${docEnum.description}
+                                                    <br/>
+                                                    <g:message code="enum.context.label"/>:
+                                                    <g:each var="context" in="${docEnum.contexts}">
+                                                        <a href="#" onclick="moveTo('${context.name.uncapitalize()}')">${context.name}</a>
+                                                    </g:each>
+                                                    <br/>
+                                                    <g:message code="values.label"/>:
+                                                    <table class="table mt-2">
+                                                        <thead>
+                                                        <tr>
+                                                            <th><g:message code="enum.value.name.label"/></th>
+                                                            <th><g:message code="enum.value.description.label"/></th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <g:each var="docEnumValue" in="${docEnum.values}">
+                                                            <tr  class="${!docEnumValue.description ? 'table-warning' : ''}">
+                                                                <td>${docEnumValue.name}</td>
+                                                                <td>${docEnumValue.description}</td>
+                                                            </tr>
+                                                        </g:each>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="card-body">
-                                            ${docEnum.description}
-                                            <br/>
-                                            <g:message code="enum.context.label"/>:
-                                            <g:each var="context" in="${docEnum.contexts}">
-                                                <a href="#" onclick="moveTo('${context.name.uncapitalize()}')">${context.name}</a>
-                                            </g:each>
-                                            <br/>
-                                            <g:message code="values.label"/>:
-                                            <table class="table mt-2">
-                                                <thead>
-                                                <tr>
-                                                    <th><g:message code="enum.value.name.label"/></th>
-                                                    <th><g:message code="enum.value.description.label"/></th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                <g:each var="docEnumValue" in="${docEnum.values}">
-                                                    <tr>
-                                                        <td>${docEnumValue.name}</td>
-                                                        <td>${docEnumValue.description}</td>
-                                                    </tr>
-                                                </g:each>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                    </g:each>
                                 </div>
-                            </g:each>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -173,8 +183,9 @@
 <asset:javascript src="jquery-3.3.1.min.js"/>
 <asset:javascript src="bootstrap.js"/>
 <asset:javascript src="fontawesome-all.js"/>
-<asset:javascript src="jquery.are-you-sure.js"/>
 <g:javascript>
+    var allVisible = true;
+
     function moveTo(id) {
         $("html, body").animate({scrollTop: $('#' + id).offset().top}, 1500);
     }
@@ -187,6 +198,21 @@
 
         if (value === '') $('.left-menu').show();
     });
+
+    function onlyCompleted(){
+        if(allVisible){
+            $('.class-card').hide();
+            $('.border-danger').show();
+            $('.fa-check-circle').hide();
+            $('#completed-button-span').text("${message(code: 'default.button.all')}");
+            allVisible = false;
+        }else{
+            $('.class-card').show();
+            $('.fa-check-circle').show();
+            $('#completed-button-span').text("${message(code: 'default.button.incomplete')}");
+            allVisible = true;
+        }
+    }
 </g:javascript>
 </body>
 </html>

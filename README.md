@@ -67,10 +67,8 @@ class DataCatalogController extends org.irblleida.dc.DataCatalogController{
 If you want to customize the views, the default paths are:
 
  - `dataCatalog/index`: index with all the information
- - `docClass/[edit|create]`: DocClass domain default views.
- - `docVariable/[show|edit|index|create]`: DocVariable domain default views.
- - `docEnum/[show|edit|index|create]`: DocEnum domain default views.
- - `docEnumValue/[show|edit|index|create]`: DocEnumValue domain default views.
+ - `docClass/edit/{id}`: DocClass domain default views.
+ - `docEnum/edit/{id}`: DocEnum domain default views.
 
 
 ### Documentation
