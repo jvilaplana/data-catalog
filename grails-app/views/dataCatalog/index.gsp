@@ -15,7 +15,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="sidebar">
+        <div class="sidebar col-3">
             <form class="form-inline my-2 my-lg-0 form-group">
                 <input id="menu-search" class="form-control mr-sm-2" type="search" placeholder="${g.message(code: 'menu.search.label')}" aria-label="${g.message(code: 'menu.search.label')}">
             </form>
@@ -33,7 +33,7 @@
             </ul>
         </div>
 
-        <div class="col-sm-12 main mt-4">
+        <div class="col-9 main mt-4">
             <h2 class="text-center"><g:message code="plugin.title"/></h2>
             <div class="container">
 
@@ -203,12 +203,13 @@
         if(allVisible){
             $('.class-card').hide();
             $('.border-danger').show();
-            $('.fa-check-circle').hide();
+            $('.left-menu').hide();
+            $('.incomplete').show();
             $('#completed-button-span').text("${message(code: 'default.button.all')}");
             allVisible = false;
         }else{
             $('.class-card').show();
-            $('.fa-check-circle').show();
+            $('.left-menu').show();
             $('#completed-button-span').text("${message(code: 'default.button.incomplete')}");
             allVisible = true;
         }
