@@ -63,16 +63,15 @@ bootRun {
 // enable if you wish to package this plugin as a standalone application
 bootRepackage.enabled = false
 grailsPublish {
-    // TODO: Provide values here
-    user = 'user'
-    key = 'key'
-    githubSlug = 'foo/bar'
+    user = System.getenv("BINTRAY_USER") ?: ''
+    key = System.getenv("BINTRAY_KEY") ?: ''
+    githubSlug = 'jvilaplana/data-catalog'
     license {
-        name = 'Apache-2.0'
+        name = 'MIT'
     }
-    title = "Data Catalog"
-    desc = "Full plugin description"
-    developers = [johndoe:"John Doe"]
+    title = "data-catalog"
+    desc = "Data Catalog Generation"
+    developers = [pbalaguer: "Pau Balaguer", jvilaplana: "Jordi Vilaplana"]
 }
 
 
