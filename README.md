@@ -51,7 +51,7 @@ It **does not offers any security mechanism**.
 
 You can override any view if you want to customize the security or the style by creating the `DataCatalog` controller and views.
 
-If you are using `SpringSecurity` Plugin and you want to customize the security, then you can extend the `DataCatalog` class.
+If you are using `SpringSecurity` Plugin and you want to customize the security, then you can extend the `DataCatalogController`, `DocClassController` and `DocEnumController` classes.
 Example:
 ```
 @Secured(['ROLE_ADMIN'])
