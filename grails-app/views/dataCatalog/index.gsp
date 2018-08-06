@@ -7,6 +7,7 @@
     <asset:stylesheet src="bootstrap-select.css"/>
     <asset:stylesheet src="jquery.timepicker.css"/>
     <asset:stylesheet src="menu.css"/>
+    <asset:stylesheet src="code.css"/>
 </head>
 <body>
 <%@ page import="org.irblleida.dc.DocClass" %>
@@ -22,13 +23,13 @@
             <h5 class="mt-3"><g:message code="domain.label"/></h5>
             <ul id="classes-list" class="nav nav-sidebar">
                 <g:each var="docClass" in="${docClassList}">
-                    <li><a href="#" onclick="moveTo('${docClass.name.uncapitalize()}')" class="left-menu ${docClass.name.uncapitalize()} ${docClass.isCompleted ? '' : 'incomplete'}">${docClass.name}</a></li>
+                    <li><code><a href="#" onclick="moveTo('${docClass.name.uncapitalize()}')" class="left-menu ${docClass.name.uncapitalize()} ${docClass.isCompleted ? '' : 'incomplete'}">${docClass.name}</a></code></li>
                 </g:each>
             </ul>
             <h5 class="mt-3"><g:message code="enum.label"/></h5>
             <ul id="enums-list" class="nav nav-sidebar">
                 <g:each var="docEnum" in="${docEnumList}">
-                    <li><a href="#" onclick="moveTo('${docEnum.name.uncapitalize()}')" class="left-menu ${docEnum.name.uncapitalize()} ${docEnum.isCompleted ? '' : 'incomplete'}">${docEnum.name}</a></li>
+                    <li><code><a href="#" onclick="moveTo('${docEnum.name.uncapitalize()}')" class="left-menu ${docEnum.name.uncapitalize()} ${docEnum.isCompleted ? '' : 'incomplete'}">${docEnum.name}</a></code></li>
                 </g:each>
             </ul>
         </div>
@@ -49,7 +50,6 @@
                         </g:eachError>
                     </div>
                 </g:hasErrors>
-
                 <div class="row">
                     <div class="col-md-12">
                         <a href="#" onclick="onlyCompleted();" class="btn btn-primary float-right">
@@ -68,7 +68,7 @@
                                         <div class="col-md-12">
                                             <div id="${docClass.name.uncapitalize()}" class="card mt-4 ${docClass.isCompleted ? '' : 'border-danger'} class-card">
                                                 <div class="card-header">
-                                                    <span>${docClass.name}</span>
+                                                    <span><code>${docClass.name}</code></span>
                                                     <g:link controller="docClass" action="edit" id="${docClass?.id}" class="btn btn-warning float-right">
                                                         <i class="far fa-edit"></i>
                                                         <g:message code="default.button.edit.label" />
@@ -93,7 +93,7 @@
                                                         <tbody>
                                                         <g:each var="docVariable" in="${docClass.variables}">
                                                             <tr class="${!docVariable.description ? 'table-warning' : ''}">
-                                                                <td>${docVariable.name}</td>
+                                                                <td><code>${docVariable.name}</code></td>
                                                                 <td><g:message code="${docClass.name.uncapitalize()}.${docVariable.name}.label" default=""/></td>
                                                                 <td>${docVariable.description}</td>
                                                                 <td>
@@ -135,7 +135,7 @@
                                         <div class="col-md-11">
                                             <div id="${docEnum.name.uncapitalize()}" class="card mt-4 ${docEnum.isCompleted ? '' : 'border-danger'} class-card">
                                                 <div class="card-header">
-                                                    <span>${docEnum.name}</span>
+                                                    <span><code>${docEnum.name}</code></span>
                                                     <g:link controller="docEnum" action="edit" id="${docEnum?.id}" class="btn btn-warning float-right">
                                                         <i class="far fa-edit"></i>
                                                         <g:message code="default.button.edit.label" />
@@ -160,7 +160,7 @@
                                                         <tbody>
                                                         <g:each var="docEnumValue" in="${docEnum.values}">
                                                             <tr  class="${!docEnumValue.description ? 'table-warning' : ''}">
-                                                                <td>${docEnumValue.name}</td>
+                                                                <td><code>${docEnumValue.name}</code></td>
                                                                 <td>${docEnumValue.description}</td>
                                                             </tr>
                                                         </g:each>
