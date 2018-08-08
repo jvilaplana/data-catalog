@@ -8,4 +8,11 @@ class DataCatalogController {
                 docEnumList: DocEnum.findAll([sort: 'name', order: 'asc'])
         ]
     }
+
+    def publicCatalog() {
+        render view: 'publicCatalog', model: [
+                docClassList: DocClass.findAll([sort: 'name', order: 'asc']),
+                docEnumList: DocEnum.findAll([sort: 'name', order: 'asc'])
+        ]
+    }
 }

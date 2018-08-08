@@ -13,6 +13,7 @@
 <%@ page import="org.irblleida.dc.DocClass" %>
 <%@ page import="org.irblleida.dc.DocEnum" %>
 <%@ page import="org.irblleida.dc.DocEnumValue" %>
+
 <button onclick="topFunction()" id="top-button" class="btn btn-primary"><i class="fas fa-arrow-up"></i> <g:message code="default.button.top"/></button>
 
 <div class="container-fluid">
@@ -53,16 +54,6 @@
                 </g:hasErrors>
                 <div class="row">
                     <div class="col-md-12">
-                        <g:link action="publicCatalog" class="btn btn-primary">
-                            <i class="fas fa-database"></i>
-                            <span><g:message code="dataCatalog.publicCatalog.label" /></span>
-                        </g:link>
-                        <a href="#" onclick="onlyCompleted();" class="btn btn-primary float-right">
-                            <i class="far fa-eye"></i>
-                            <span id="completed-button-span"><g:message code="default.button.incomplete" /></span>
-                        </a>
-                    </div>
-                    <div class="col-md-12">
                         <div class="card mt-2">
                             <div class="card-header">
                                 <span><g:message code="plugin.title"/> (<g:message code="domain.label"/>)</span>
@@ -71,13 +62,9 @@
                                 <div class="row justify-content-md-center">
                                     <g:each var="docClass" in="${docClassList}">
                                         <div class="col-md-12">
-                                            <div id="${docClass.name.uncapitalize()}" class="card mt-4 ${docClass.isCompleted ? '' : 'border-danger'} class-card">
+                                            <div id="${docClass.name.uncapitalize()}" class="card mt-4 class-card">
                                                 <div class="card-header">
                                                     <span><code>${docClass.name}</code></span>
-                                                    <g:link controller="docClass" action="edit" id="${docClass?.id}" class="btn btn-warning float-right">
-                                                        <i class="far fa-edit"></i>
-                                                        <g:message code="default.button.edit.label" />
-                                                    </g:link>
                                                 </div>
                                                 <div class="card-body">
                                                     ${docClass.description}
@@ -97,7 +84,7 @@
                                                         </thead>
                                                         <tbody>
                                                         <g:each var="docVariable" in="${docClass.variables}">
-                                                            <tr class="${!docVariable.description ? 'table-warning' : ''}">
+                                                            <tr>
                                                                 <td><code>${docVariable.name}</code></td>
                                                                 <td><g:message code="${docClass.name.uncapitalize()}.${docVariable.name}.label" default=""/></td>
                                                                 <td>${docVariable.description}</td>
@@ -138,13 +125,9 @@
                                 <div class="row justify-content-md-center">
                                     <g:each var="docEnum" in="${docEnumList}">
                                         <div class="col-md-11">
-                                            <div id="${docEnum.name.uncapitalize()}" class="card mt-4 ${docEnum.isCompleted ? '' : 'border-danger'} class-card">
+                                            <div id="${docEnum.name.uncapitalize()}" class="card mt-4 class-card">
                                                 <div class="card-header">
                                                     <span><code>${docEnum.name}</code></span>
-                                                    <g:link controller="docEnum" action="edit" id="${docEnum?.id}" class="btn btn-warning float-right">
-                                                        <i class="far fa-edit"></i>
-                                                        <g:message code="default.button.edit.label" />
-                                                    </g:link>
                                                 </div>
                                                 <div class="card-body">
                                                     ${docEnum.description}
@@ -164,7 +147,7 @@
                                                         </thead>
                                                         <tbody>
                                                         <g:each var="docEnumValue" in="${docEnum.values}">
-                                                            <tr  class="${!docEnumValue.description ? 'table-warning' : ''}">
+                                                            <tr>
                                                                 <td><code>${docEnumValue.name}</code></td>
                                                                 <td>${docEnumValue.description}</td>
                                                             </tr>
@@ -188,38 +171,6 @@
 <asset:javascript src="jquery-3.3.1.min.js"/>
 <asset:javascript src="bootstrap.js"/>
 <asset:javascript src="fontawesome-all.js"/>
-<g:javascript>
-    var allVisible = true;
-
-    function moveTo(id) {
-        $("html, body").animate({scrollTop: $('#' + id).offset().top}, 1500);
-    }
-
-    $('#menu-search').on("keyup", function () {
-        var value = $(this).val().toLowerCase();
-
-        $('.left-menu').hide();
-        $("a[class*='" + value + "']").show();
-
-        if (value === '') $('.left-menu').show();
-    });
-
-    function onlyCompleted(){
-        if(allVisible){
-            $('.class-card').hide();
-            $('.border-danger').show();
-            $('.left-menu').hide();
-            $('.incomplete').show();
-            $('#completed-button-span').text("${message(code: 'default.button.all')}");
-            allVisible = false;
-        }else{
-            $('.class-card').show();
-            $('.left-menu').show();
-            $('#completed-button-span').text("${message(code: 'default.button.incomplete')}");
-            allVisible = true;
-        }
-    }
-</g:javascript>
 <g:javascript>
     function topFunction() {
         $("html, body").animate({scrollTop: 0}, 1500);

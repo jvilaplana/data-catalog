@@ -54,11 +54,15 @@ You can override any view if you want to customize the security or the style by 
 If you are using `SpringSecurity` Plugin and you want to customize the security, then you can extend the `DataCatalogController`, `DocClassController` and `DocEnumController` classes.
 Example:
 ```
-@Secured(['ROLE_ADMIN'])
 class DataCatalogController extends org.irblleida.dc.DataCatalogController{
-
+    
+    @Secured(['ROLE_ADMIN'])
     def index() {
         super.index()
+    }
+    
+    def publicCatalog() {
+        super.publicCatalog()
     }
 
 }
@@ -67,6 +71,7 @@ class DataCatalogController extends org.irblleida.dc.DataCatalogController{
 If you want to customize the views, the default paths are:
 
  - `dataCatalog/index`: index with all the information
+ - `dataCatalog/publicCatalog`: DataCatalog view for public usage
  - `docClass/edit/{id}`: DocClass domain default views.
  - `docEnum/edit/{id}`: DocEnum domain default views.
 
