@@ -25,13 +25,13 @@
             <h5 class="mt-3"><g:message code="domain.label"/></h5>
             <ul id="classes-list" class="nav nav-sidebar">
                 <g:each var="docClass" in="${docClassList}">
-                    <li><code><a href="#" onclick="moveTo('${docClass.name.uncapitalize()}')" class="left-menu ${docClass.name.uncapitalize()} ${docClass.isCompleted ? '' : 'incomplete'}">${docClass.name}</a></code></li>
+                    <li><code><a href="#" onclick="moveTo('${docClass.name.uncapitalize()}')" class="left-menu ${docClass.name.uncapitalize()}">${docClass.name}</a></code></li>
                 </g:each>
             </ul>
             <h5 class="mt-3"><g:message code="enum.label"/></h5>
             <ul id="enums-list" class="nav nav-sidebar">
                 <g:each var="docEnum" in="${docEnumList}">
-                    <li><code><a href="#" onclick="moveTo('${docEnum.name.uncapitalize()}')" class="left-menu ${docEnum.name.uncapitalize()} ${docEnum.isCompleted ? '' : 'incomplete'}">${docEnum.name}</a></code></li>
+                    <li><code><a href="#" onclick="moveTo('${docEnum.name.uncapitalize()}')" class="left-menu ${docEnum.name.uncapitalize()}">${docEnum.name}</a></code></li>
                 </g:each>
             </ul>
         </div>
