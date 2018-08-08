@@ -19,11 +19,12 @@ class DocClassController {
         }
 
         for(DocVariable docVariable in docClass.variables){
+
             if(params[docVariable.name + '-description']) docVariable.description = params[docVariable.name + '-description']
             if(params[docVariable.name + '-type']) docVariable.type = params[docVariable.name + '-type']
             if(params[docVariable.name + '-classType']) docVariable.classType = params[docVariable.name + '-classType']
             if(params[docVariable.name + '-code']) docVariable.code = params[docVariable.name + '-code']
-            if(params[docVariable.name + '-required']) docVariable.required = params[docVariable.name + '-required']
+            if(params[docVariable.name + '-required']) docVariable.required = (params[docVariable.name + '-required'] == 'true')
             if(params[docVariable.name + '-defaultUnits']) docVariable.defaultUnits = params[docVariable.name + '-defaultUnits']
         }
 
